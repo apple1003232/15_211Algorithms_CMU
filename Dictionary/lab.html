@@ -1,0 +1,166 @@
+<html>
+<head><meta content="text/html; charset=UTF-8" http-equiv="content-type"/>
+<title>15-211: Amortized Dictionary</title>
+<link rel="stylesheet" href="misc/doc.css" type="text/css"/>
+</head>
+<body text="#000000" bgcolor="#FFFFFF">
+
+
+<div id="main">
+<center><h1>Homework Assignment 1
+<br>
+<br><font color="green">Amortized Dictionary</font></h1></center>
+
+<center>Due date: May 22 by 23:59</center>
+
+<h2>Overview</h2><div class="xhtml2section"><p>
+<p>One of the most important structures in computer science are the <i>dictionary</i> data structures that support fast insert and lookup operations. Dozens of different data structures have been proposed for implementing dictionaries including hash tables, skip lists, search trees and others.
+
+<p>In this lab assignment you will implement a dictionary based on linked lists and sorted arrays. This structure combines a fast lookup on sorted arrays with ease of linked list-insertion. Note that a sorted array is good for lookups (think of a binary search) but bad for inserts. A linked list is good for inserts but bad for lookups (they can take linear time).
+
+<p>The idea of this data structure is as follows. We will have a linked list of arrays, where array k has size 2<sup>k</sup>, and each array is in sorted order. However, there will be no relationship between the items in different arrays. The issue of which arrays to be used is based on the binary representation of the number of items we are storing. For example, if we have 11 items to store, then the arrays of sizes 1, 2, and 8 will be used, since 11 = 1 + 2 + 8, and our dictionary might look like this:
+
+
+<center><IMG src="misc/dict.bmp" ></center>
+
+
+<p>This data structure has interesting amortized and
+average-case performance, hence the name "Amortized Array-Based Dictionary" (AAD), which we will be using thought the writeup.
+</div>
+
+<h2>Objectives</h2><div class="xhtml2section"><p>
+<ul>
+<li>Refresh your mind about programming in Java
+<li>Analyze a complex data structure
+<li>Gain an understanding of the complexity of algorithms
+</ul>
+</div>
+
+
+
+<h2>Theory Questions: 20 points</h2><div class="xhtml2section"><p>
+In the file <a href="theory/theory1.pdf">theory.pdf</a> you will find short theory questions.
+Please answer the questions in this file and turn it <b>in class on Friday May 20.</b>
+</div>
+
+
+<h2>Starter Code</h2><div class="xhtml2section"><p>
+Download <a href="hw1.zip">the starter code for assignment (zip file)</a>.
+Do not change any of the starter code!
+Once you finish implementation, submit java files to the Blackboard digital dropbox.
+</div>
+
+<h2>What to Submit</h2><div class="xhtml2section"><p>
+You FTP the following java files
+<ul>
+<li> Dictionary.java
+</ul>
+<p>Do not submit anything else like zip files, folders, desktops, class files.
+Make sure you do not use packages in your java files as well.
+Failure to do so will result in a 20 point penalty.
+</div>
+
+
+
+<h2>Instructions</h2><div class="xhtml2section"><p>
+You are going to implement the array-based dictionary data structure
+<dir><pre>
+public class Dictionary&lt;E extends Comparable&lt;E>> implements DictionaryInterface&lt;E>
+{
+   private int size;
+   private Node head;
+   ...
+}
+</pre></dir>
+<p>using a linked list of sorted arrays.  Specifically, you'll maintain a linked list of the following <code>Nodes</code>:
+<dir><pre>
+private static class Node
+{
+   private int power;
+   private Comparable[] array;
+   private Node next;
+   ...
+}
+</pre></dir>
+
+<p>These nodes are organized in the ascending order of array sizes - there are no two nodes containing arrays of the same size.
+
+<p>Since this is a pretty advanced assignment, you have been given a lot of starter code to help you out.  Don't be intimidated by the starter code!  If you understand the theory behind the AAD data structure and  follow the directions in the starter code, the code you write will be rather
+short.
+
+<p>Your main goal is to implement <a href="code/DictionaryInterface.java">the Dictionary interface</a>:
+
+<h4>add(AnyType e):</h4>
+<p>You create an array of size one, containing a specified element e, and insert the array into the linked list. Next, you must traverse the linked list and merge sorted arrays of the same size until at most one array remains of each size.
+
+
+<h4>remove(AnyType e):</h4>
+<p>This is the most cumbersome operation which can be implemented in more than one way. There are three cases to consider.
+<ol>
+<li>e is not in the dictionary
+<li>e is in the dictionary, and it is in the smallest array
+<li>e is in the dictionary, and it is not in the smallest array
+</ol>
+The first case is trivial. In the second case, remove e from the smallest array, and then split it up into a bunch of smaller arrays. In general terms, removing an item from an array of size 2<sup>k</sup> results in splitting an array into k smaller arrays of sizes 1, 2, 4, and so on until 2<sup>k-1</sup>. Next, put those arrays in the dictionary. No any merging is required. In the third case,
+<ul>
+<li>find the array (let us call it A) that contains e,
+<li>remove e from that array, by shifting elements to the left,
+<li>take the biggest element from the smallest array
+<li>insert it inorder to the array A
+<li>split up the smallest array as it described in case 2.
+</ul>
+
+<h4>contains(AnyType e):</h4>
+<p>Returns true if the dictionary contains  a specified element e, otherwise - false. Since each array in the list is in sorted order, you run Java's binary search on each of them. .
+
+
+<h4>frequency(AnyType e):</h4>
+<p>Since the AAD allows duplicates, this method returns the number of elements in the dictionary equal to e.
+
+
+
+<p>In addiiton you will need to implement the following helper methods.  Their specifications are detailed in the starter code.
+<ul>
+<li>frequency(Comparable[] a, Comparable item)
+<li>merge(Comparable[] a, Comparable[] b)
+<li>mergeDown()
+<li>splitUp(Comparable[] a, int k)
+</ul>
+
+<p>If you get stuck, or don't understand something, re-read the notes. Ask for help if you need it!
+</div>
+
+<h2>Point Breakdown: 70 points</h2><div class="xhtml2section">
+<p>Here is the point breakdown for the implementation part:
+<ul>
+<li>add(e) - 10 points
+<li>remove(e) - 20 points
+<li>contains(e) - 10 points
+<li>frequency(e) - 10 points
+<li>merge helper function - 10 points
+<li>splitUp helper function - 10 points
+</ul>
+<p> Style will be graded very strictly for this lab assignment.  Make sure you listen to the comments in the starter code (they are there to help you!) and your methods satisfy their specifications.  Especially make sure you understand the AAD data structure as explained in lecture so that your implementation is as efficient as it should be.
+</div>
+
+
+<h2>Coding Style: 10 points</h2><div class="xhtml2section">
+<p>Your assignment will be graded first by compiling and testing it. After that, we will read your code to determine whether appropriate data structures and algorithms were used, as well as judge the overall style of your code. Programs will be graded both on correctness as well as their ability to deal with so-called edge cases, like empty lists, lists with only one element, and so on. Points will be deducted for poor design decisions and un-commented, or un-readable code.
+</div>
+
+
+
+<h2>Testing</h2><div class="xhtml2section">
+<p>Testing should be straightforward.  Given a specific sequence of operations on an AAD, the resulting AAD is unique, so you can test by simply seeing if it is correct (the already-implemented toString() method should be really helpful for doing this).
+
+<p>That being said, here is a <a href="code/TestingDriver.java">TestingDriver.java</a> a class to help test your implementation.  It will run some simple tests on your code and provide feedback.
+</div>
+
+
+
+<hr>
+<p>Victor S. Adamchik, CMU, 2010
+
+
+</body>
+</html>
